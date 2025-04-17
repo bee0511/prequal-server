@@ -1,0 +1,29 @@
+version: "3"
+services:
+  backend1:
+    build: ./backend
+    environment:
+      - PORT=1233
+    ports:
+      - "9001:1233"
+
+  backend2:
+    build: ./backend
+    environment:
+      - PORT=1233
+    ports:
+      - "9002:1233"
+
+  backend3:
+    build: ./backend
+    environment:
+      - PORT=1233
+    ports:
+      - "9003:1233"
+
+  backend4:
+    build: ./backend
+    environment:
+      - PORT=1233
+    ports:
+      - "9004:1233"

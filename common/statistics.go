@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"sync"
+	"sort"
 )
 
 type ReplicaStatisticsParameters struct {
@@ -80,13 +81,20 @@ func TransformMapToJson() []statDataArr {
 
 	lock.RLock()
 	defer lock.RUnlock()
-	for name, stats := range ReplicaStatistics {
-		// fmt.Printf("Converting to JSON - Name: %s, Stats: %+v\n", name, stats)
+	var keys []string
+	for name := range ReplicaStatistics {
+		keys = append(keys, name)
+	}
+	sort.Strings(keys)
+
+	for _, name := range keys {
+		stats := ReplicaStatistics[name]
 		jsonArray = append(jsonArray, statDataArr{
 			ReplicaName: name,
 			Statistics:  stats,
 		})
 	}
+
 	// fmt.Printf("Final JSON Array: %+v\n", jsonArray)
 
 	return jsonArray

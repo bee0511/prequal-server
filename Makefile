@@ -1,30 +1,48 @@
-.PHONY: run-containers
-run-containers:
-	podman run --rm -d -p 9001:1233 --name server1 localhost/rashree2023/load-balancer-probe-replica:v3
-	podman run --rm -d -p 9002:1233 --name server2 localhost/rashree2023/load-balancer-probe-replica:v3
-	podman run --rm -d -p 9003:1233 --name server3 localhost/rashree2023/load-balancer-probe-replica:v3
-	podman run --rm -d -p 9004:1233 --name server4 localhost/rashree2023/load-balancer-probe-replica:v3
+# ==== Main Default ====
 
-## stop: stops all demo services
-.PHONY: stop
-stop:
-	podman stop server1
-	podman stop server2
-	podman stop server3
-	podman stop server4
+.PHONY: all
+all: reset run-admin wait run-proxy
 
-## help: print this help message
-.PHONY: help
-help:
-	@echo 'Usage:'
-	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'
+# Default target when just typing "make"
+.DEFAULT_GOAL := all
 
-## run: starts demo http services
-.PHONY: run-proxy-server
-run-proxy-server:
+# ==== Reset everything ====
+
+.PHONY: reset
+reset:
+	docker compose down
+	docker compose up --build -d
+
+# ==== Run fake admin server ====
+
+.PHONY: run-admin
+run-admin:
+	go run admin_mock.go
+
+# ==== Wait for admin server to be ready ====
+
+.PHONY: wait
+wait:
+	@echo "Waiting for admin server to be ready..."
+	@sleep 2
+
+# ==== Run Prequal proxy server ====
+
+.PHONY: run-proxy
+run-proxy:
 	go run cmd/main.go
 
-## run: starts rabbitmq service
+# ==== Cleanup ====
+
+.PHONY: down
+down:
+	docker compose down
+	@if [ -f admin.pid ]; then kill `cat admin.pid` && rm admin.pid; fi
+
+# ==== RabbitMQ (optional) ====
+
 .PHONY: run-rabbitmq
 run-rabbitmq:
-	podman run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 docker.io/rabbitmq:4.0-management
+	docker run -d --rm --name rabbitmq \
+		-p 5672:5672 -p 15672:15672 \
+		rabbitmq:4.0-management
