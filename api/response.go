@@ -1,6 +1,6 @@
 package api
 
-const adminUrl string = "http://localhost:8080/admin"
+const adminUrl string = "http://admin:8080/admin"
 
 type PrequalParametersResponse struct {
 	Id                int     `json:"id"`

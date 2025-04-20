@@ -10,13 +10,14 @@ func main() {
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"success": true,
 			"data": []map[string]interface{}{
-				{"id": 1, "name": "r1", "url": "http://localhost:9001", "status": "active"},
-				{"id": 2, "name": "r2", "url": "http://localhost:9002", "status": "active"},
-				{"id": 3, "name": "r3", "url": "http://localhost:9003", "status": "active"},
-				{"id": 4, "name": "r4", "url": "http://localhost:9004", "status": "active"},
+				{"id": 1, "name": "r1", "url": "http://backend1", "status": "active"},
+				{"id": 2, "name": "r2", "url": "http://backend2", "status": "active"},
+				{"id": 3, "name": "r3", "url": "http://backend3", "status": "active"},
+				{"id": 4, "name": "r4", "url": "http://backend4", "status": "active"},
 			},
 		})
 	})
+	
 
 	http.HandleFunc("/admin/get-prequal-parameters", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]interface{}{

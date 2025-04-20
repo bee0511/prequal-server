@@ -15,13 +15,23 @@ var ch *amqp.Channel
 // InitializePublisher sets up the connection and channel for the publisher.
 func InitializePublisher() {
 	var err error
+	maxRetries := 10
 
-	conn, err = amqp.Dial("amqp://guest:guest@localhost:5672/")
+	for i := 1; i <= maxRetries; i++ {
+		conn, err = amqp.Dial("amqp://guest:guest@rabbitmq:5672/")
+		if err == nil {
+			break
+		}
+		log.Printf("RabbitMQ connection failed (attempt %d/%d): %v", i, maxRetries, err)
+		time.Sleep(2 * time.Second)
+	}
+
 	failOnError(err, "Failed to connect to RabbitMQ")
 
 	ch, err = conn.Channel()
 	failOnError(err, "Failed to open a channel")
 }
+
 
 // PublishMessage publishes a message to the specified queue.
 func PublishMessage(queueName string, message *Message) error {

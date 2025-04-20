@@ -1,29 +1,53 @@
-version: "3"
+version: '3.8'
+
 services:
-  backend1:
-    build: ./backend
-    environment:
-      - PORT=1233
+  # ---------- Admin (Go) ----------
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
     ports:
-      - "9001:1233"
+      - "8080:8080"
+
+  # ---------- Load Balancer (Go) ----------
+  loadbalancer:
+    build:
+      context: .
+      dockerfile: Dockerfile.loadbalancer
+    ports:
+      - "8000:8000"
+    depends_on:
+      - admin
+      - rabbitmq
+    environment:
+      - ADMIN_BASE=http://admin:8080    # 若你改成用 env 取值
+
+  # ---------- RabbitMQ ----------
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  # ---------- 4 simple Nginx backends ----------
+  backend1: &backend
+    image: nginx:1.25-alpine
+    environment:
+      - SERVER_NAME=r1
+    volumes:
+      - ./nginx/backend.conf.template:/etc/nginx/templates/backend.conf.template:ro
 
   backend2:
-    build: ./backend
+    <<: *backend
     environment:
-      - PORT=1233
-    ports:
-      - "9002:1233"
+      - SERVER_NAME=r2
 
   backend3:
-    build: ./backend
+    <<: *backend
     environment:
-      - PORT=1233
-    ports:
-      - "9003:1233"
+      - SERVER_NAME=r3
 
   backend4:
-    build: ./backend
+    <<: *backend
     environment:
-      - PORT=1233
-    ports:
-      - "9004:1233"
+      - SERVER_NAME=r4
