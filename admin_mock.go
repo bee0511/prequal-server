@@ -10,12 +10,12 @@ func main() {
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"success": true,
 			"data": []map[string]interface{}{
-				{"id": 1, "name": "r1", "url": "http://backend1", "status": "active"},
-				{"id": 2, "name": "r2", "url": "http://backend2", "status": "active"},
-				{"id": 3, "name": "r3", "url": "http://backend3", "status": "active"},
-				{"id": 4, "name": "r4", "url": "http://backend4", "status": "active"},
+			{"id": 1, "name": "u1", "url": "http://user1", "status": "active"},
+			{"id": 2, "name": "u2", "url": "http://user2", "status": "active"},
+			{"id": 3, "name": "u3", "url": "http://user3", "status": "active"},
+			{"id": 4, "name": "u4", "url": "http://user4", "status": "active"},
 			},
-		})
+		  })
 	})
 	
 
